@@ -1,0 +1,9 @@
+---
+    #
+    # Installing Java 8
+    #
+- name: Install Java 8
+  apt:
+   name: openjdk-8-jdk
+   state: present
+   update_cache: yes
