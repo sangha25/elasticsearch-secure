@@ -18,17 +18,26 @@ cp /usr/share/elasticsearch/elastic-certificates.p12 /etc/elasticsearch/certs
 
 # Encrpyting communications between nodes in a cluster
 
-Add the following lines in the Elasticsearch configuration file. In my case, the path is /etc/elasticsearch/elasticsearch.yml |
+Add the following lines in the Elasticsearch configuration file. In my case, the path is /etc/elasticsearch/elasticsearch.yml 
 
-http.host: 0.0.0.0 # accept request from remote
+http.host: 0.0.0.0 # accept request from remote 
+
 xpack.security.enabled: true
+
 xpack.security.transport.ssl.enabled: true
+
 xpack.security.transport.ssl.verification_mode: certificate
+
 xpack.security.transport.ssl.keystore.path: certs/elastic-certificates.p12
+
 xpack.security.transport.ssl.truststore.path: certs/elastic-certificates.p12
+
 xpack.security.http.ssl.enabled: true
+
 xpack.security.http.ssl.keystore.path: certs/elastic-certificates.p12
+
 xpack.security.http.ssl.truststore.path: certs/elastic-certificates.p12
+
 xpack.security.http.ssl.client_authentication: optional
 
 Restart Elasticsearch service to make sure the above changes take effect and no error occurred at this point.
