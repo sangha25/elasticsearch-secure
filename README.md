@@ -1,26 +1,39 @@
 # In this assignment we will provision AWS infrastructure using Terraform specific to elasticsearch requirements.
 we need below resources in aws
+
 AMI  ==> Amazon Linux 2 AMI or ubuntu
+
 Instance Type == >  t3.medium ( This is not free tier, will be charged - caution here)
+
 Network & Subnet ==> Choose existing VPC & subnet (or) create new ones. It is recommended to run your Elasticsearch instance in a private subnet for security reason.
+
 Storage ==>  30 GB gp2 EBS volume
 
 Security Group 
 - Security group must allow access to below ports:
 
 Type: SSH
+
 Protocol: TCP
+
 Port Range: 22
+
 Source: Give your IP
 
 Type: Custom TCP
+
 Protocol: TCP
+
 Port Range: 9200
+
 Source: Multi AZ Subnet IPv4 CIDR (This is required for ES node in one AZ to discover node running in another AZ)
 
 Type: Custom TCP
+
 Protocol: TCP
+
 Port Range: 9300
+
 Source: Multi AZ Subnet IPv4 CIDR (This is required for ES node in one AZ to discover node running in another AZ)
 
 
