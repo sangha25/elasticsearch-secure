@@ -1,4 +1,4 @@
----
+ ---
     #
     # Installing Elasticsearch
     #
@@ -27,6 +27,35 @@
       apt:
        name: elasticsearch
        update_cache: yes
+
+    - name: Install nginx
+      apt:
+        name: nginx
+        update_cache: yes
+
+    - name: Install nginx utilities
+      apt:
+        name: apache2-utils
+        update_cache: yes
+
+    # - name: Get file stat to perform backup
+    #     stat: path=/etc/nginx/sites-available/default
+    #     register: default
+
+    # - name : Taking backup of nginx conf files if it is exits
+    #     copy:
+    #     src: /etc/nginx/sites-available/default
+    #     dest: /etc/nginx/sites-available/old_default
+    #     when: default.stat.exists
+    #       
+        
+
+    - name : Updating nginx conf files to act as proxy
+      copy:
+        src: script/default
+        dest: /etc/nginx/sites-available/default
+        mode: '0777'
+                
        
     # Update Elasticsearch config file to allow access (to secure Elasticsearch, bind to 'localhost'). 
     
@@ -50,7 +79,7 @@
       lineinfile:
        destfile: /etc/elasticsearch/elasticsearch.yml
        regexp: 'cluster.initial_master_nodes:'
-       line: 'cluster.initial_master_nodes: ["{{ ansible_default_ipv4.address }}"]'
+       line: "cluster.initial_master_nodes:$(ip addr | grep enp0s8 | grep inet | awk '{print $2}' | cut -f1 -d '/')"
     
     # Start Elasticsearch
     - name: Starting Elasticsearch
@@ -58,6 +87,8 @@
        name: elasticsearch
        state: started
 
+    - name: Running self-signed yml files to generate certificates.
+    - include: self-signed-cert.yml
 
     - name: Encrypted communication on Elastic server
       blockinfile:
@@ -75,18 +106,15 @@
             xpack.security.http.ssl.client_authentication: optional
         backup: yes
 
-    - name: copy script to remote server
-      copy:
-        src: script/self-signed-cert-gen.sh
-        dest: /tmp/self-signed-cert-gen.sh
-        mode: '0777'
-
-
-    - name : Executing script to generate self-signed certificates.
-      command: sh /tmp/self-signed-cert-gen.sh 
-
+  
     - name: Restart elasticservice
       service:
         name: elasticsearch
         state: restarted    
+
+    - name: Restart nginx
+      service:
+        name: nginx
+        state: restarted 
+
 
