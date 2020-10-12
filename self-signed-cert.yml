@@ -1,0 +1,72 @@
+---
+    #
+    # Generating SSL certificate
+    #
+    
+   
+    - hosts: elk
+      remote_user: user
+      become: yes
+      become_user: root
+
+      gather_facts: false
+      
+      tasks:
+
+        - name: Install openssl package
+          apt:
+            name: openssl
+            state: latest
+
+        - name: create ssl directory
+          file: path=/etc/elasticsearch/certs mode=0775
+          
+        - name: Generate Private Key
+          openssl_privatekey: path=/etc/elasticsearch/certs/server-master.Key
+
+        - name: Generate CST 
+          openssl_csr:
+            path: /etc/elasticsearch/certs/elk-client.csr 
+            privatekey_path: /etc/elasticsearch/certs/server-master.Key
+            common_name: elkaws
+            country_name: IN  
+            email_address: sanghapal25@gmail.com 
+            organization_name: mycompany
+
+        - name: Generate a self signed certificate
+          openssl_certificate:
+            csr_path: /etc/elasticsearch/certs/elk-client.csr
+            path: /etc/elasticsearch/certs/elk-self-signed.create
+            privatekey_path: /etc/elasticsearch/certs/server-master.Key
+            provider: selfsigned
+
+     
+        - name : generating elasticsearch-certificate.p12
+          command: openssl pkcs12 -export -out elastic-certificates.p12 -inkey server-master.Key -in elk-self-signed.create pass:cGFzc3dvcmQ=
+        #     responses:
+        #         "Enter Export Password: " :  "{{ export_pw }}"
+        #         "Verifying - Enter Export Password: " : "{{ confirm_pw }}"
+                 
+          args:
+            chdir: /etc/elasticsearch/certs
+          
+
+
+        # - name: Test expect
+        # expect:
+        #   timeout: 5
+        #   echo: yes
+        #   command: keytool -genkey -alias tomcat -keyalg RSA -sigalg SHA1withRSA -keysize 2048 -keystore keystore.jks
+        #   responses:
+    
+        #     "Enter keystore password": "{{ keystore_pw }}"
+        #     "Re-enter new password": "{{ keystore_pw }}"
+        #     "last name": "{{ cname }}"
+        #     "organizational unit": "EngIT"
+        #     "organization": "{{ company }}"
+        #     "Locality": "RTP"
+        #     "Province" : "NC"
+        #     "country": "US"
+        #     \[no\]: "yes"
+        #     "Enter key password" : "{{ keystore_pw }}"
+    
