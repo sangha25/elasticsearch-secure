@@ -80,6 +80,8 @@
        destfile: /etc/elasticsearch/elasticsearch.yml
        regexp: 'cluster.initial_master_nodes:'
        line: "cluster.initial_master_nodes:$(ip addr | grep enp0s8 | grep inet | awk '{print $2}' | cut -f1 -d '/')"
+       # line: 'network.host: [_local_,_site_] // for AWS Cloud
+       # _local_ refers to any loopback addr on the system & _site_ refers to IP add of server
     
     # Start Elasticsearch
     - name: Starting Elasticsearch
