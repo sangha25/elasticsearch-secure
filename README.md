@@ -54,3 +54,9 @@ site.yml  we run this files using ansible-playbook site.yml -K
  # to provide more security to our webpage we used nginx which acts as proxy and require to provide credential to access the page
  we updated the nginx configuration to acts a proxy
 
+To create ngnix user credential , we should use below command
+sudo htpasswd -c /etc/nginx/htpasswd.users <user_name>
+
+it will prompt for password. Now this will be your user id and password to access the es server web page.
+
+To create the AWS infrastructure, created the .tf files .
